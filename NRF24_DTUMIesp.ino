@@ -332,7 +332,7 @@ void setup(void) {
           DEBUG_OUT.printf("Setup mqtt ......\r\n");
           setupMQTT();
           DEBUG_OUT.printf("Setup www .......\r\n");
- //         setupWebServer();
+          setupWebServer();
                  // setupUpdateByOTA();
           calcSunUpDown (getNow());
           istTag = isDayTime(0);
@@ -740,6 +740,26 @@ void SendMQTTMsg(String topic, String value){
 
 }//---SendMQTTMsg-------------------------------------------------------------------------------------------------------
 
+void SendMQTTJSON(String topic) {
+      // compose and sent JSON Message
+      String json = String("{\"TIME\":\"")+(String)getDateStr(getNow())+String("T")+(String)getTimeStr(getNow())+String("\", \"ENERGY\":{")+
+      String("\"Power\":")+String(PMI)+String(", ")+
+      String("\"Limit\":")+String(Limit)+String(", ")+
+      String("\"Power_"+(String)(PV+1)+"\":")+String(P_DC)+String(", ")+
+      String("\"Voltage_"+(String)(PV+1)+"\":")+String(U_DC)+String(", ")+
+      String("\"Current_"+(String)(PV+1)+"\":")+String(I_DC)+String(", ")+
+      String("\"Energy_"+(String)(PV+1)+"\":")+String(Q_DC)+String(", ")+
+      String("\"Temperature\":")+String(TEMP)+String(", ")+
+      String("\"Status"+(String)(PV+1)+"\":\"")+String(STAT)+String("\"")+
+      String("}}");
+
+      mqttClient.beginMessage(topic);
+      mqttClient.print(json);
+      mqttClient.endMessage();
+}
+
+
+
 void PrintOutValues(void){
 //----------------------------------------------------------------------------------------------------------------------
   DEBUG_OUT.printf("CH:%02i MI:%04iW [PV%1i %5sW %4sV %4sA %04iWh][%5sV %4sHz %4sC S:%i] Grd:%04iW Lm:%04iW PVok:%i  ",
@@ -1080,18 +1100,24 @@ void loop(void) {
              if (MQTT && DataOK ){
                //DEBUG_OUT.printf("Update Mqtt Services\r\n");
                mqttClient.poll();
-               SendMQTTMsg((String)INVTOT_P, (String) PMI);
-               SendMQTTMsg((String)LIMIT_P, (String) Limit);
-               SendMQTTMsg((String)INV_P_PVNR+(String)(PV+1), (String) P_DC);
-               SendMQTTMsg((String)INV_UDC_PVNR+(String)(PV+1), (String) U_DC);
-               SendMQTTMsg((String)INV_IDC_PVNR+(String)(PV+1), (String) I_DC);
-               SendMQTTMsg((String)INV_Q_PVNR+(String)(PV+1), (String) Q_DC);
-               SendMQTTMsg((String)INV_TEMP, (String) TEMP);
-               SendMQTTMsg((String)INV_STS_PVNR+(String)(PV+1), (String) STAT);
-               SendMQTTMsg((String)INV_CONSUM_P, (String) (abs(GridPower) + PMI));
-               SendMQTTMsg((String)DAY, (String)getDateStr(getNow()));
-               SendMQTTMsg((String)TIME, (String)getTimeStr(getNow()));
-               SendMQTTMsg((String)INFO, "NRF24");
+               
+               #ifdef SENDJSON
+                SendMQTTJSON(JSON_TOPIC);
+               #else
+                SendMQTTMsg((String)INVTOT_P, (String) PMI);
+                SendMQTTMsg((String)LIMIT_P, (String) Limit);
+                SendMQTTMsg((String)INV_P_PVNR+(String)(PV+1), (String) P_DC);
+                SendMQTTMsg((String)INV_UDC_PVNR+(String)(PV+1), (String) U_DC);
+                SendMQTTMsg((String)INV_IDC_PVNR+(String)(PV+1), (String) I_DC);
+                SendMQTTMsg((String)INV_Q_PVNR+(String)(PV+1), (String) Q_DC);
+                SendMQTTMsg((String)INV_TEMP, (String) TEMP);
+                SendMQTTMsg((String)INV_STS_PVNR+(String)(PV+1), (String) STAT);
+                SendMQTTMsg((String)INV_CONSUM_P, (String) (abs(GridPower) + PMI));
+                SendMQTTMsg((String)DAY, (String)getDateStr(getNow()));
+                SendMQTTMsg((String)TIME, (String)getTimeStr(getNow()));
+                SendMQTTMsg((String)INFO, "NRF24");
+
+               #endif
                }
              else {
                //DEBUG_OUT.printf("No MQTT..\r\n");

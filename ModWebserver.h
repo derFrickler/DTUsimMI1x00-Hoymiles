@@ -81,7 +81,7 @@ void handleRoot() {
         out += "<th>" +  String(getChannelName(i)) + "</th>";
     out += "</tr>";
 
-    for (byte pv=0; pv <=3; pv++){
+    for (byte pv=0; pv <NRofPV; pv++){
       out += "<tr>";
       for (byte i = 0; i < (ANZAHL_VALUES); i++)
         if (i==0) out += "<td>" +  String(int(VALUES[pv][i])) + "</td>"; //PVnr must not be displayed as a floatnr

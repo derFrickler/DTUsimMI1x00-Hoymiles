@@ -46,9 +46,9 @@ int WR_LIMITTED     = 0;    //fixed limiting in Watt. if you dont want fixed lim
 // WR Config ..................................................................................
 #define SerialWR      MY_MI_WR	// <<<<<<<<<<<<<<<<<<<<<<< define in secrets.h
 bool MI300  = 0;     //<<<<<<<<<<<< choose which model of Hoymiles MI microinverter
-bool MI600  = 1;     //choose this for TSUN TSOL-M800 also
-bool MI1500 = 0;
-#define NRofPV  2   //<<<<<<<<<<<< number of PV panels in use (connected) 1-4. (not the number of WR-ports)
+bool MI600  = 0;     //choose this for TSUN TSOL-M800 also
+bool MI1500 = 1;
+#define NRofPV  3   //<<<<<<<<<<<< number of PV panels in use (connected) 1-4. (not the number of WR-ports)
                     //assume the ports are connected in order from 1 to 4
                     //we have to know how many PVs are really connected to WR.
                     //if we know it, we dont have to wait of all ports!
@@ -62,9 +62,9 @@ IPAddress ROUTER = IPAddress(192,168,1,1);       // your routers IP???
 //#define TIMESERVER_NAME "fritz.box"
 
 // MQTT ........................................................................................
-const char MQTTbroker[] = "broker";
+const char MQTTbroker[] = "192.168.1.11";
 int        MQTTport     = 1883;
-char       MQTTclientid[] = "TSUN";
+char       MQTTclientid[] = "MYDTU";
 
 // send Tasmota compatible MQTT JSON instead of single topics
 #define SENDJSON
